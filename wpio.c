@@ -1,11 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "wpio.h"
 
-WpioStream *wpio_alloc(const WpioStream_OPS *ops, void *aux) {
-    WpioStream *stream;
+WPIO_Stream *wpio_alloc(const WPIO_StreamOps *ops, void *aux) {
+    WPIO_Stream *stream;
 
-    stream = (WpioStream*)malloc(sizeof(WpioStream));
+    stream = (WPIO_Stream*)malloc(sizeof(WPIO_Stream));
     if (stream == NULL) {
         return NULL;
     }
@@ -13,18 +11,20 @@ WpioStream *wpio_alloc(const WpioStream_OPS *ops, void *aux) {
     stream->ops = ops;
     stream->aux = aux;
 
+    stream->for_debug = 12345;
+
     return stream;
 }
 
-int wpio_is_readable(WpioStream *stream) {
+WPIO_API int wpio_is_readable(WPIO_Stream *stream) {
     return 1;
 }
 
-int wpio_is_writable(WpioStream *stream) {
+WPIO_API int wpio_is_writable(WPIO_Stream *stream) {
     return 1;
 }
 
-int wpio_is_seekable(WpioStream *stream) {
+WPIO_API int wpio_is_seekable(WPIO_Stream *stream) {
     return 1;
 }
 
@@ -38,7 +38,7 @@ int wpio_is_seekable(WpioStream *stream) {
  *
  * @return string 返回实际所读取的数据，产生错误时抛出异常
  */
-size_t wpio_read(WpioStream *stream, void *buffer, size_t length) {
+WPIO_API size_t wpio_read(WPIO_Stream *stream, void *buffer, size_t length) {
     return stream->ops->read(stream, buffer, length);
 }
 
@@ -51,7 +51,7 @@ size_t wpio_read(WpioStream *stream, void *buffer, size_t length) {
  *
  * @return int 返回实际写入的字节数，产生错误时抛出异常
  */
-size_t wpio_write(WpioStream *stream, void *buffer, size_t length) {
+WPIO_API size_t wpio_write(WPIO_Stream *stream, const void *buffer, size_t length) {
     return stream->ops->write(stream, buffer, length);
 }
 
@@ -60,7 +60,7 @@ size_t wpio_write(WpioStream *stream, void *buffer, size_t length) {
  *
  * @return bool 成功时返回 true, 失败时抛出异常
  */
-int wpio_flush(WpioStream *stream) {
+WPIO_API int wpio_flush(WPIO_Stream *stream) {
     return stream->ops->flush(stream);
 }
 
@@ -72,7 +72,7 @@ int wpio_flush(WpioStream *stream) {
  *
  * @return bool 成功时返回 true, 失败时抛出异常
  */
-int wpio_seek(WpioStream *stream, long offset, int whence) {
+WPIO_API int wpio_seek(WPIO_Stream *stream, off64_t offset, int whence) {
     return stream->ops->seek(stream, offset, whence);
 }
 
@@ -81,7 +81,7 @@ int wpio_seek(WpioStream *stream, long offset, int whence) {
  *
  * @return int 返回指针在流中的位置，产生错误时抛出异常
  */
-long wpio_tell(WpioStream *stream) {
+WPIO_API off64_t wpio_tell(WPIO_Stream *stream) {
     return stream->ops->tell(stream);
 }
 
@@ -90,17 +90,23 @@ long wpio_tell(WpioStream *stream) {
  *
  * @return bool 如果指针到了流结束的位置则返回 true, 否则返回 false
  */
-/*
-int wpio_eof(WpioStream *stream) {
+WPIO_API int wpio_eof(WPIO_Stream *stream) {
     return stream->ops->eof(stream);
 }
-*/
 
 /**
  * 关闭流
  *
  * @return bool 成功时返回 true, 失败时抛出异常
  */
-int wpio_close(WpioStream *stream) {
+WPIO_API int wpio_close(WPIO_Stream *stream) {
     return stream->ops->close(stream);
 }
+/*
+void main(void) {
+    printf("sizeof(size_t) = %d\r\n", sizeof(size_t));
+    printf("sizeof(off64_t) = %d\r\n", sizeof(off64_t));
+
+    system("pause");
+}
+*/

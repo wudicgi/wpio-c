@@ -1,70 +1,51 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <glib.h>
-#include <glib-object.h>
-#include <gio/gio.h>
 #include "wpio.h"
-#include "file.h"
 
-#define FILE_IO_STREAM(stream) (((FILE_STREAM_DATA*)stream->aux)->io)
-#define FILE_INPUT_STREAM(stream) (((FILE_STREAM_DATA*)stream->aux)->input)
-#define FILE_OUTPUT_STREAM(stream) (((FILE_STREAM_DATA*)stream->aux)->output)
+#define AUX_FP(stream) (((FileStreamData*)((stream)->aux))->fp)
 
-static gssize file_read(WpioStream *stream, void *buffer, gsize length) {
-    gssize bytes_read;
+typedef struct _file_stream_data {
+    FILE    *fp;
+} FileStreamData;
 
-    bytes_read = g_input_stream_read(FILE_INPUT_STREAM(stream), buffer, length, NULL, NULL);
-
-    return bytes_read;
+static size_t file_read(WPIO_Stream *stream, void *buffer, size_t length) {
+    return fread(buffer, sizeof(char), length, AUX_FP(stream));
 }
 
-static gssize file_write(WpioStream *stream, const void *buffer, gsize length) {
-    gssize bytes_written;
-
-    bytes_written = g_output_stream_write(FILE_OUTPUT_STREAM(stream), buffer, length, NULL, NULL);
-
-    return bytes_written;
+static size_t file_write(WPIO_Stream *stream, const void *buffer, size_t length) {
+    return fwrite(buffer, sizeof(char), length, AUX_FP(stream));
 }
 
-static gboolean file_flush(WpioStream *stream) {
-    return g_output_stream_flush(FILE_OUTPUT_STREAM(stream), NULL, NULL);
+static int file_flush(WPIO_Stream *stream) {
+    return fflush(AUX_FP(stream));
 }
 
-static gboolean file_seek(WpioStream *stream, goffset offset, GSeekType whence) {
-    return g_seekable_seek((GSeekable*)FILE_INPUT_STREAM(stream), offset, whence, NULL, NULL);
+static int file_seek(WPIO_Stream *stream, off64_t offset, int whence) {
+    return fseeko64(AUX_FP(stream), offset, whence);
 }
 
-static goffset file_tell(WpioStream *stream) {
-    return g_seekable_tell((GSeekable*)FILE_INPUT_STREAM(stream));
-}
-/*
-static int file_eof(WpioStream *stream) {
-}
-*/
-static gboolean file_close(WpioStream *stream) {
-    if (FILE_IO_STREAM(stream) != NULL) {
-        g_io_stream_close(FILE_IO_STREAM(stream), NULL, NULL);
-    } else {
-        g_input_stream_close(FILE_INPUT_STREAM(stream), NULL, NULL);
-    }
-
-    return TRUE;
+static off64_t file_tell(WPIO_Stream *stream) {
+    return ftello64(AUX_FP(stream));
 }
 
-static const WpioStream_OPS file_ops = {
+static int file_eof(WPIO_Stream *stream) {
+    return feof(AUX_FP(stream));
+}
+
+static int file_close(WPIO_Stream *stream) {
+    return fclose(AUX_FP(stream));
+}
+
+static const WPIO_StreamOps file_ops = {
     file_read,
     file_write,
     file_flush,
     file_seek,
     file_tell,
-//    file_eof,
+    file_eof,
     file_close
 };
 
-WpioStream *file_open(const char *filename, const WpioMode mode) {
-    FILE_STREAM_DATA *aux;
-    GFile *file;
-    GError *error = NULL;
+WPIO_API WPIO_Stream *file_open(const char *filename, const WPIO_Mode mode) {
+    FileStreamData *aux;
 
     if (filename == NULL) {
         return NULL;
@@ -72,21 +53,9 @@ WpioStream *file_open(const char *filename, const WpioMode mode) {
 
     aux = malloc(sizeof(*aux));
 
-    file = g_file_new_for_path(filename);
-    if (mode == WPIO_MODE_READ_WRITE) {
-        aux->io = (GIOStream*)g_file_open_readwrite(file, NULL, &error);
-        if (error != NULL) {
-            return NULL;
-        }
-        aux->input = g_io_stream_get_input_stream(aux->io);
-        aux->output = g_io_stream_get_output_stream(aux->io);
-    } else {
-        aux->io = NULL;
-        aux->input = (GInputStream*)g_file_read(file, NULL, &error);
-        if (error != NULL) {
-            return NULL;
-        }
-        aux->output = NULL;
+    aux->fp = fopen64(filename, (mode == WPIO_MODE_READ_WRITE) ? "r+b" : "rb");
+    if (aux->fp == NULL) {
+        return NULL;
     }
 
     return wpio_alloc(&file_ops, aux);
