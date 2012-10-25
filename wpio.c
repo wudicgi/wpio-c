@@ -1,4 +1,4 @@
-#include "wpio.h"
+#include "internal.h"
 
 WPIO_Stream *wpio_alloc(const WPIO_StreamOps *ops, void *aux) {
     WPIO_Stream *stream;

@@ -1,4 +1,4 @@
-#include "wpio.h"
+#include "internal.h"
 #include "libs/crc32.h"
 #include "libs/xxtea.h"
 

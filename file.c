@@ -1,4 +1,4 @@
-#include "wpio.h"
+#include "internal.h"
 
 #define AUX_FP(stream) (((FileStreamData*)((stream)->aux))->fp)
 
