@@ -35,13 +35,13 @@ static int file_close(WPIO_Stream *stream) {
 }
 
 static const WPIO_StreamOps file_ops = {
-    file_read,
-    file_write,
+    file_close,
     file_flush,
     file_seek,
     file_tell,
     file_eof,
-    file_close
+    file_read,
+    file_write
 };
 
 WPIO_API WPIO_Stream *file_open(const char *filename, const WPIO_Mode mode) {

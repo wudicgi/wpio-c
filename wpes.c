@@ -241,13 +241,13 @@ static int wpes_close(WPIO_Stream *stream) {
 }
 
 static const WPIO_StreamOps wpes_ops = {
-    wpes_read,
-    wpes_write,
+    wpes_close,
     wpes_flush,
     wpes_seek,
     wpes_tell,
     wpes_eof,
-    wpes_close
+    wpes_read,
+    wpes_write
 };
 
 WPIO_Stream *wpes_open_stream(const WPIO_Stream *base_stream, const WPIO_Mode mode) {

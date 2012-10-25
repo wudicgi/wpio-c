@@ -26,13 +26,13 @@ typedef struct _WPIO_StreamOps WPIO_StreamOps;
 #include "wpes.h"
 
 struct _WPIO_StreamOps {
-    size_t (*read)(WPIO_Stream *stream, void *buffer, size_t length);
-    size_t (*write)(WPIO_Stream *stream, const void *buffer, size_t length);
+    int (*close)(WPIO_Stream *stream);
     int (*flush)(WPIO_Stream *stream);
     int (*seek)(WPIO_Stream *stream, off64_t offset, int whence);
     off64_t (*tell)(WPIO_Stream *stream);
     int (*eof)(WPIO_Stream *stream);
-    int (*close)(WPIO_Stream *stream);
+    size_t (*read)(WPIO_Stream *stream, void *buffer, size_t length);
+    size_t (*write)(WPIO_Stream *stream, const void *buffer, size_t length);
 };
 
 #endif // _INTERNAL_H_
