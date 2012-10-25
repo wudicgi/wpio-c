@@ -40,6 +40,10 @@ WPIO_API int wpio_seek(WPIO_Stream *stream, off64_t offset, int whence) {
     return stream->ops->seek(stream, offset, whence);
 }
 
+WPIO_API int wpio_eof(WPIO_Stream *stream) {
+    return stream->ops->eof(stream);
+}
+
 WPIO_API off64_t wpio_tell(WPIO_Stream *stream) {
     return stream->ops->tell(stream);
 }
@@ -50,10 +54,6 @@ WPIO_API size_t wpio_read(WPIO_Stream *stream, void *buffer, size_t length) {
 
 WPIO_API size_t wpio_write(WPIO_Stream *stream, const void *buffer, size_t length) {
     return stream->ops->write(stream, buffer, length);
-}
-
-WPIO_API int wpio_eof(WPIO_Stream *stream) {
-    return stream->ops->eof(stream);
 }
 
 /*

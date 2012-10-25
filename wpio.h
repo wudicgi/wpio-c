@@ -80,6 +80,13 @@ WPIO_API int wpio_seek(WPIO_Stream *stream, off64_t offset, int whence);
 WPIO_API off64_t wpio_tell(WPIO_Stream *stream);
 
 /**
+ * 测试指针是否到了流结束的位置
+ *
+ * @return bool 如果指针到了流结束的位置则返回 true, 否则返回 false
+ */
+WPIO_API int wpio_eof(WPIO_Stream *stream);
+
+/**
  * 读取流
  *
  * 如果可读取的数据没有请求的那么多，则返回的字符串长度小于所请求的字节数。
@@ -101,12 +108,5 @@ WPIO_API size_t wpio_read(WPIO_Stream *stream, void *buffer, size_t length);
  * @return int 返回实际写入的字节数，产生错误时抛出异常
  */
 WPIO_API size_t wpio_write(WPIO_Stream *stream, const void *buffer, size_t length);
-
-/**
- * 测试指针是否到了流结束的位置
- *
- * @return bool 如果指针到了流结束的位置则返回 true, 否则返回 false
- */
-WPIO_API int wpio_eof(WPIO_Stream *stream);
 
 #endif // __WPIO_H__

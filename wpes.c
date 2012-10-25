@@ -46,6 +46,42 @@ typedef struct _wpes_stream_data {
     long        buffer_offset; // 当前块的位置
 } WPES_StreamData;
 
+static int wpes_close(WPIO_Stream *stream) {
+    WPES_StreamData *self = (WPES_StreamData*)stream->aux;
+
+    return wpio_close(self->base_stream);
+}
+
+static int wpes_flush(WPIO_Stream *stream) {
+    return 0;
+}
+
+static int wpes_seek(WPIO_Stream *stream, off64_t offset, int whence) {
+    WPES_StreamData *self = (WPES_StreamData*)stream->aux;
+
+    if (whence == SEEK_SET) {
+        self->offset = offset;
+    } else if (whence == SEEK_END) {
+        self->offset = self->length + offset;
+    } else if (whence == SEEK_CUR) {
+        self->offset += offset;
+    }
+
+    return 0;
+}
+
+static off64_t wpes_tell(WPIO_Stream *stream) {
+    WPES_StreamData *self = (WPES_StreamData*)stream->aux;
+
+    return self->offset;
+}
+
+static int wpes_eof(WPIO_Stream *stream) {
+    WPES_StreamData *self = (WPES_StreamData*)stream->aux;
+
+    return (self->offset == self->length);
+}
+
 static long wpes_get_block_offset(long offset) {
     return ((offset / WPES_DATA_SIZE) * WPES_BLOCK_SIZE);
 }
@@ -202,42 +238,6 @@ static size_t wpes_write(WPIO_Stream *stream, const void *buffer, size_t length)
 //    assert('$didwrite == $length');
 
     return 0;
-}
-
-static int wpes_flush(WPIO_Stream *stream) {
-    return 0;
-}
-
-static int wpes_seek(WPIO_Stream *stream, off64_t offset, int whence) {
-    WPES_StreamData *self = (WPES_StreamData*)stream->aux;
-
-    if (whence == SEEK_SET) {
-        self->offset = offset;
-    } else if (whence == SEEK_END) {
-        self->offset = self->length + offset;
-    } else if (whence == SEEK_CUR) {
-        self->offset += offset;
-    }
-
-    return 0;
-}
-
-static off64_t wpes_tell(WPIO_Stream *stream) {
-    WPES_StreamData *self = (WPES_StreamData*)stream->aux;
-
-    return self->offset;
-}
-
-static int wpes_eof(WPIO_Stream *stream) {
-    WPES_StreamData *self = (WPES_StreamData*)stream->aux;
-
-    return (self->offset == self->length);
-}
-
-static int wpes_close(WPIO_Stream *stream) {
-    WPES_StreamData *self = (WPES_StreamData*)stream->aux;
-
-    return wpio_close(self->base_stream);
 }
 
 static const WPIO_StreamOps wpes_ops = {

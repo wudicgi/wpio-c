@@ -6,12 +6,8 @@ typedef struct _file_stream_data {
     FILE    *fp;
 } FileStreamData;
 
-static size_t file_read(WPIO_Stream *stream, void *buffer, size_t length) {
-    return fread(buffer, sizeof(char), length, AUX_FP(stream));
-}
-
-static size_t file_write(WPIO_Stream *stream, const void *buffer, size_t length) {
-    return fwrite(buffer, sizeof(char), length, AUX_FP(stream));
+static int file_close(WPIO_Stream *stream) {
+    return fclose(AUX_FP(stream));
 }
 
 static int file_flush(WPIO_Stream *stream) {
@@ -30,8 +26,12 @@ static int file_eof(WPIO_Stream *stream) {
     return feof(AUX_FP(stream));
 }
 
-static int file_close(WPIO_Stream *stream) {
-    return fclose(AUX_FP(stream));
+static size_t file_read(WPIO_Stream *stream, void *buffer, size_t length) {
+    return fread(buffer, sizeof(char), length, AUX_FP(stream));
+}
+
+static size_t file_write(WPIO_Stream *stream, const void *buffer, size_t length) {
+    return fwrite(buffer, sizeof(char), length, AUX_FP(stream));
 }
 
 static const WPIO_StreamOps file_ops = {
