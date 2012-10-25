@@ -7,12 +7,10 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin\Debug\wpio" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+				<Option output="bin/Debug/wpio" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
-				<Option createDefFile="1" />
-				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-DBUILD_DLL" />
@@ -23,8 +21,8 @@
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin\Release\wpio" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option output="bin/Release/wpio" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -44,14 +42,15 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="file.h" />
-		<Unit filename="libs\crc32.c">
+		<Unit filename="internal.h" />
+		<Unit filename="libs/crc32.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libs\crc32.h" />
-		<Unit filename="libs\xxtea.c">
+		<Unit filename="libs/crc32.h" />
+		<Unit filename="libs/xxtea.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libs\xxtea.h" />
+		<Unit filename="libs/xxtea.h" />
 		<Unit filename="wpes.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -63,6 +62,7 @@
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
