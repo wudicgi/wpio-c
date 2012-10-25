@@ -250,7 +250,7 @@ static const WPIO_StreamOps wpes_ops = {
     wpes_write
 };
 
-WPIO_Stream *wpes_open_stream(const WPIO_Stream *base_stream, const WPIO_Mode mode) {
+static WPIO_Stream *wpes_open_stream(const WPIO_Stream *base_stream, const WPIO_Mode mode) {
     WPES_StreamData *aux;
 
     if (base_stream == NULL) {
